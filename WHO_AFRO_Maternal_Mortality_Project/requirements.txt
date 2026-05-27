@@ -1,10 +1,7 @@
 streamlit
 pandas
 numpy
-requests
 openpyxl
 plotly
 scikit-learn
-statsmodels
-xgboost
 joblib

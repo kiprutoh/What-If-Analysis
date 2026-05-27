@@ -1,15 +1,20 @@
 # WHO AFRO Maternal Mortality What-if Analysis
 
-This project provides a maternal mortality what-if analysis and scenario simulation platform for WHO AFRO countries.
+## Streamlit Deployment
 
-## Features
-- Automated data extraction
-- Excel export generation
-- Predictive modeling
-- Scenario simulation
-- Streamlit dashboard deployment
+### Run locally
 
-## Run Streamlit App
 ```bash
+pip install -r requirements.txt
 streamlit run app.py
 ```
+
+### Deploy on Streamlit Cloud
+
+1. Upload this folder to GitHub
+2. Open Streamlit Community Cloud
+3. Connect GitHub repository
+4. Select:
+   - Branch: main
+   - Main file: app.py
+5. Deploy
