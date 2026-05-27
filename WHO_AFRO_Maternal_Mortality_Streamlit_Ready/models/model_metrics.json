@@ -1,0 +1,18 @@
+{
+  "n_training_rows": 137,
+  "n_countries": 35,
+  "year_min": 2000,
+  "year_max": 2020,
+  "r2_in_sample": 0.3525,
+  "mae_in_sample": 141.18,
+  "cv_r2_mean": 0.2764,
+  "target_transform": "log(MMR)",
+  "feature_columns": [
+    "Skilled Birth Attendance",
+    "Fertility Rate",
+    "Female Literacy",
+    "Rural Population"
+  ],
+  "target": "Maternal Mortality Ratio",
+  "data_source": "World Bank Open Data API (WHO AFRO countries)"
+}
