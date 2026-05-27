@@ -1,0 +1,19 @@
+{
+  "n_training_rows": 1152,
+  "n_countries": 48,
+  "year_min": 2000,
+  "year_max": 2023,
+  "r2_in_sample": 0.3139,
+  "mae_in_sample": 172.46,
+  "cv_r2_mean": 0.4619,
+  "target_transform": "log(MMR)",
+  "model_family": "Bayesian linear regression (BayesianRidge) on log(MMR)",
+  "feature_columns": [
+    "Skilled Birth Attendance",
+    "Fertility Rate",
+    "Female Literacy",
+    "Rural Population"
+  ],
+  "target": "Maternal Mortality Ratio",
+  "data_source": "World Bank Open Data API (WHO AFRO countries)"
+}
