@@ -23,7 +23,24 @@ def load_model():
 
 def predict_mmr(model, features: dict[str, float]) -> float:
     row = pd.DataFrame([{col: features[col] for col in FEATURE_COLUMNS}])
+    # Model predicts log(MMR)
     return float(np.exp(model.predict(row)[0]))
+
+
+def predict_mmr_interval(model, features: dict[str, float], z: float = 1.96) -> tuple[float, float, float]:
+    """Return (mean, lo, hi) using log-normal approximation from Bayesian predictive std.
+
+    For BayesianRidge, sklearn supports predict(return_std=True) for the target space.
+    Here target space is log(MMR), so interval is exp(mu ± z*std).
+    """
+    row = pd.DataFrame([{col: features[col] for col in FEATURE_COLUMNS}])
+    mu, std = model.predict(row, return_std=True)
+    mu = float(mu[0])
+    std = float(std[0])
+    mean = float(np.exp(mu + 0.5 * std * std))
+    lo = float(np.exp(mu - z * std))
+    hi = float(np.exp(mu + z * std))
+    return mean, lo, hi
 
 
 def scenario_frame(

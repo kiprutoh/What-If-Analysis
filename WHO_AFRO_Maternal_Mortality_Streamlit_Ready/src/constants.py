@@ -14,7 +14,11 @@ INDICATORS = {
     "mmr": "SH.STA.MMRT",           # Maternal mortality ratio (per 100k live births)
     "sba": "SH.STA.BRTW.ZS",        # Births attended by skilled health staff (%)
     "fertility": "SP.DYN.TFRT.IN",  # Fertility rate (births per woman)
+    "ado_fertility": "SP.ADO.TFRT", # Adolescent fertility rate (births per 1,000 women 15-19)
+    "poverty_215": "SI.POV.DDAY",   # Poverty headcount ratio at $2.15/day (2017 PPP) (% of population)
+    "gov_health_exp": "SH.XPD.GHED.GD.ZS",  # Domestic general government health expenditure (% of GDP)
     "literacy": "SE.ADT.LITR.FE.ZS",  # Literacy rate, adult female (%)
+    "literacy_total": "SE.ADT.LITR.ZS",  # Literacy rate, adult total (%)
     "rural": "SP.RUR.TOTL.ZS",      # Rural population (% of total)
 }
 

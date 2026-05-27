@@ -20,7 +20,11 @@ RENAME_MAP = {
     "mmr": "Maternal Mortality Ratio",
     "sba": "Skilled Birth Attendance",
     "fertility": "Fertility Rate",
+    "ado_fertility": "Adolescent Fertility Rate",
+    "poverty_215": "Poverty ($2.15/day, %)",
+    "gov_health_exp": "Gov Health Expenditure (% GDP)",
     "literacy": "Female Literacy",
+    "literacy_total": "Adult Literacy",
     "rural": "Rural Population",
 }
 
@@ -101,7 +105,16 @@ def build_afro_panel(iso3_list: list[str] | None = None, impute: bool = True) ->
         frames[key] = raw[["iso3", "country", "year", RENAME_MAP[key]]]
 
     panel = frames["mmr"]
-    for key in ("sba", "fertility", "literacy", "rural"):
+    for key in (
+        "sba",
+        "fertility",
+        "ado_fertility",
+        "poverty_215",
+        "gov_health_exp",
+        "literacy",
+        "literacy_total",
+        "rural",
+    ):
         panel = panel.merge(frames[key], on=["iso3", "country", "year"], how="outer")
 
     panel = panel.sort_values(["country", "year"]).reset_index(drop=True)

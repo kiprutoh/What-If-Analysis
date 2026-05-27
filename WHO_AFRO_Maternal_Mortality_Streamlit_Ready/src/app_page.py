@@ -9,7 +9,7 @@ import plotly.express as px
 import streamlit as st
 
 from src.constants import DATA_PATH, FEATURE_COLUMNS, METRICS_PATH, TARGET_COLUMN
-from src.predict import load_model, predict_mmr, scenario_frame
+from src.predict import load_model, predict_mmr, predict_mmr_interval, scenario_frame
 
 ROOT = Path(__file__).resolve().parents[1]
 LATEST_PATH = ROOT / "data" / "afro_country_latest.csv"
@@ -118,30 +118,34 @@ def render_app() -> None:
                 "Female Literacy": literacy,
                 "Rural Population": rural,
             }
-            baseline_pred = predict_mmr(model, baseline)
+            baseline_mean, baseline_lo, baseline_hi = predict_mmr_interval(model, baseline)
 
         with col_main:
-            predicted = predict_mmr(model, scenario_inputs)
-            delta_model = baseline_pred - predicted
-            pct_model = (delta_model / baseline_pred * 100) if baseline_pred else 0.0
+            predicted_mean, predicted_lo, predicted_hi = predict_mmr_interval(model, scenario_inputs)
+            delta_model = baseline_mean - predicted_mean
+            pct_model = (delta_model / baseline_mean * 100) if baseline_mean else 0.0
 
             m1, m2, m3 = st.columns(3)
             m1.metric(
                 "Predicted MMR (scenario)",
-                f"{predicted:.0f}",
+                f"{predicted_mean:.0f}",
                 f"{-delta_model:.0f} vs model baseline",
             )
-            m2.metric("Model at baseline inputs", f"{baseline_pred:.0f}")
+            m2.metric("Model at baseline inputs", f"{baseline_mean:.0f}")
             m3.metric(
                 "Observed MMR (reference)",
                 f"{observed_mmr:.0f}",
                 help="Latest MMEIG-aligned estimate from World Bank for this country",
             )
+            st.caption(
+                f"Uncertainty (95% interval) — baseline: **{baseline_lo:.0f}–{baseline_hi:.0f}**, "
+                f"scenario: **{predicted_lo:.0f}–{predicted_hi:.0f}**."
+            )
 
             compare_df = pd.DataFrame(
                 {
                     "Series": ["Model baseline", "Scenario", "Observed (reference)"],
-                    "MMR": [baseline_pred, predicted, observed_mmr],
+                    "MMR": [baseline_mean, predicted_mean, observed_mmr],
                 }
             )
             fig = px.bar(
@@ -172,8 +176,12 @@ def render_app() -> None:
             export["Country"] = country
             export["Baseline_Year"] = data_year
             export["Observed_MMR"] = observed_mmr
-            export["Model_Baseline_MMR"] = round(baseline_pred, 1)
-            export["Predicted_MMR"] = round(predicted, 1)
+            export["Model_Baseline_MMR"] = round(baseline_mean, 1)
+            export["Model_Baseline_MMR_Lo95"] = round(baseline_lo, 1)
+            export["Model_Baseline_MMR_Hi95"] = round(baseline_hi, 1)
+            export["Predicted_MMR"] = round(predicted_mean, 1)
+            export["Predicted_MMR_Lo95"] = round(predicted_lo, 1)
+            export["Predicted_MMR_Hi95"] = round(predicted_hi, 1)
             export["MMR_Reduction_vs_Model_Baseline"] = round(delta_model, 1)
             export["Pct_Change_vs_Model_Baseline"] = round(pct_model, 2)
 
@@ -192,17 +200,18 @@ def render_app() -> None:
         prow = _country_row(latest, preset_country)
         pbaseline = {c: float(prow[c]) for c in FEATURE_COLUMNS}
         pobserved = float(prow[TARGET_COLUMN])
-        base_pred = predict_mmr(model, pbaseline)
+        base_pred_mean, _, _ = predict_mmr_interval(model, pbaseline)
 
         rows = []
         for name, overrides in _preset_scenarios(pbaseline).items():
             inputs = {**pbaseline, **overrides}
-            pred = predict_mmr(model, inputs)
+            pred_mean, pred_lo, pred_hi = predict_mmr_interval(model, inputs)
             rows.append(
                 {
                     "Scenario": name,
-                    "Predicted MMR": round(pred, 1),
-                    "Change vs model baseline": round(base_pred - pred, 1),
+                    "Predicted MMR": round(pred_mean, 1),
+                    "Predicted (Lo–Hi)": f"{pred_lo:.0f}–{pred_hi:.0f}",
+                    "Change vs model baseline": round(base_pred_mean - pred_mean, 1),
                     **{
                         f"Δ {k}": round(inputs[k] - pbaseline[k], 2)
                         for k in FEATURE_COLUMNS
@@ -220,7 +229,7 @@ def render_app() -> None:
             color="Predicted MMR",
             color_continuous_scale="RdYlGn_r",
         )
-        fig2.add_hline(y=base_pred, line_dash="dash", annotation_text="Model baseline")
+        fig2.add_hline(y=base_pred_mean, line_dash="dash", annotation_text="Model baseline")
         fig2.add_hline(
             y=pobserved, line_dash="dot", line_color="gray", annotation_text="Observed MMR"
         )

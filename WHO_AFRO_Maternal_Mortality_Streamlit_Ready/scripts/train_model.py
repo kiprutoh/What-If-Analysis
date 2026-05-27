@@ -8,7 +8,7 @@ import sys
 import joblib
 import numpy as np
 import pandas as pd
-from sklearn.linear_model import Ridge
+from sklearn.linear_model import BayesianRidge
 from sklearn.metrics import mean_absolute_error, r2_score
 from sklearn.model_selection import cross_val_score
 from sklearn.pipeline import Pipeline
@@ -41,7 +41,7 @@ def main() -> None:
     model = Pipeline(
         steps=[
             ("scale", StandardScaler()),
-            ("regressor", Ridge(alpha=2.0, random_state=42)),
+            ("regressor", BayesianRidge()),
         ]
     )
     model.fit(X, y)
@@ -68,6 +68,7 @@ def main() -> None:
             4,
         ),
         "target_transform": "log(MMR)",
+        "model_family": "Bayesian linear regression (BayesianRidge) on log(MMR)",
         "feature_columns": FEATURE_COLUMNS,
         "target": TARGET_COLUMN,
         "data_source": "World Bank Open Data API (WHO AFRO countries)",
