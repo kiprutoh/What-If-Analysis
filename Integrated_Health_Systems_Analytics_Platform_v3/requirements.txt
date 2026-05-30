@@ -1,0 +1,16 @@
+
+streamlit
+pandas
+numpy
+plotly
+openpyxl
+requests
+scikit-learn
+xgboost
+statsmodels
+python-docx
+reportlab
+python-pptx
+geopandas
+folium
+pyyaml
